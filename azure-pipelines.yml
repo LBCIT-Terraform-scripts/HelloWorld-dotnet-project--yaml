@@ -24,29 +24,30 @@ stages:
         buildConfiguration: "Release"
 
     steps:
-    # - task: DotNetCoreCLI@2
-    #   inputs:
-    #     command: 'restore'
-    #     projects: '**/*.csproj'
-    #     feedsToUse: 'select'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+        feedsToUse: 'select'
 
-    # - task: DotNetCoreCLI@2
-    #   inputs:
-    #     command: 'build'
-    #     projects: '**/*.csproj'
-    #     arguments: '--configuration $(buildConfiguration)'
-    # - task: DotNetCoreCLI@2
-    #   inputs:
-    #     command: 'publish'
-    #     publishWebProjects: true
-    #     arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
+
     # - template: Template/buildandrestore.yaml
     #   parameters:
     #     buildConfiguration: 'Debug'
 
-      - template: Template/buildandrestore.yaml
-        parameters: 
-          buildConfiguration: 'Release'
+    #   - template: Template/buildandrestore.yaml
+    #     parameters: 
+    #       buildConfiguration: 'Release'
 
     # - task: PublishBuildArtifacts@1
     #   inputs:
@@ -57,7 +58,7 @@ stages:
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: '$(build.ArtifactStagingDirectory)'
-          artifact: 'drop.$(buildConfiguration)'
+          artifact: 'drop'
           publishLocation: 'pipeline'
 
 - stage: "DeploytoDev"
@@ -79,7 +80,7 @@ stages:
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'dev-web-app-1-1'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/**/*.zip'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 - stage: "DeploytoStage"
   dependsOn: "DeploytoDev"
