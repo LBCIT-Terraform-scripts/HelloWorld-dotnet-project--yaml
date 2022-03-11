@@ -68,7 +68,7 @@ stages:
   jobs:
   - deployment:
     pool:
-      vmimage: "ubuntu-latest"
+      vmimage: "windows-latest"
     environment: 'Feature'
     strategy:
       runOnce:
