@@ -13,40 +13,44 @@ pr:
 - master
 - dev
 
-pool:
-  vmimage: "ubuntu-latest"
+stages:
+- stage: "Build"
+  jobs:
+  - job: "BuildJob"
+    pool:
+      vmimage: "ubuntu-latest"
 
-variables:
-    buildConfiguration: "Release"
+    variables:
+        buildConfiguration: "Release"
 
-steps:
+    steps:
+    # - task: DotNetCoreCLI@2
+    #   inputs:
+    #     command: 'restore'
+    #     projects: '**/*.csproj'
+    #     feedsToUse: 'select'
 
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: 'restore'
-#     projects: '**/*.csproj'
-#     feedsToUse: 'select'
+    # - task: DotNetCoreCLI@2
+    #   inputs:
+    #     command: 'build'
+    #     projects: '**/*.csproj'
+    #     arguments: '--configuration $(buildConfiguration)'
+    # - task: DotNetCoreCLI@2
+    #   inputs:
+    #     command: 'publish'
+    #     publishWebProjects: true
+    #     arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
+    - template: Template/buildandrestore.yaml
+      parameters:
+        buildConfiguration: 'Debug'
 
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: 'build'
-#     projects: '**/*.csproj'
-#     arguments: '--configuration $(buildConfiguration)'
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: 'publish'
-#     publishWebProjects: true
-#     arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
-- template: Template/buildandrestore.yaml
-  parameters:
-    buildConfiguration: 'Debug'
+    - template: Template/buildandrestore.yaml
+      parameters: 
+        buildConfiguration: 'Release'
 
-- template: Template/buildandrestore.yaml
-  parameters: 
-    buildConfiguration: 'Release'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     ArtifactName: 'drop'
+    #     publishLocation: 'Container'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
