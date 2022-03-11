@@ -61,6 +61,7 @@ stages:
         targetPath: '$(build.ArtifactStagingDirectory)'
         artifact: 'drop'
         publishLocation: 'pipeline'
+
 - stage: "DeploytoFeature"
   dependsOn: "Build"
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature')
@@ -85,6 +86,15 @@ stages:
               appType: 'webApp'
               WebAppName: 'web-app-stage'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+          - task: ShaykiAbramczyk.CreatePullRequest.CreatePullRequest.CreatePullRequest@1
+            displayName: 'Create Pull Request'
+            inputs:
+              repoType: GitHub
+              githubEndpoint: 'GitHub connection 2'
+              githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
+              targetBranch: dev
+              title: 'Merge $(Build.SourceBranch) to dev'
+              reviewers: 'ayomide@lbcit.ca'
 
 - stage: "DeploytoDev"
   dependsOn: "Build"
