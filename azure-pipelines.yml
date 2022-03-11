@@ -63,6 +63,7 @@ stages:
 
 - stage: "DeploytoDev"
   dependsOn: "Build"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
   jobs:
   - deployment:
     pool:
@@ -72,6 +73,10 @@ stages:
       runOnce:
         deploy:
           steps:
+
+          ################
+          # NOT NEEDED IN ENVIRONMENT DEPLOYMENT
+          ###############
           # - task: DownloadPipelineArtifact@2
           #   inputs:
           #     buildType: 'current'
@@ -110,7 +115,8 @@ stages:
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
 - stage: "DeploytoProd"
-  dependsOn: "DeploytoStage"
+  dependsOn: "Build"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
   jobs:
   - deployment:
     pool:
