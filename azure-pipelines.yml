@@ -61,7 +61,6 @@ stages:
         artifact: 'drop'
         publishLocation: 'pipeline'
 
-
 - stage: "DeploytoDev"
   dependsOn: "Build"
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
