@@ -60,7 +60,7 @@ stages:
         artifact: 'drop.$(buildConfiguration)'
         publishLocation: 'pipeline'
 
-- stage: "Deploy to Dev"
+- stage: "DeploytoDev"
   dependsOn: "BuildJob"
   jobs:
   - job:
@@ -80,8 +80,8 @@ stages:
         WebAppName: 'dev-web-app-1-1'
         packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-- stage: "Deploy to Stage"
-  dependsOn: "Deploy to Dev"
+- stage: "DeploytoStage"
+  dependsOn: "DeploytoDev"
   jobs:
   - job:
     pool:
@@ -100,8 +100,8 @@ stages:
         WebAppName: 'web-app-stage'
         packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-- stage: "Deploy to Prod"
-  dependsOn: "Deploy to Stage"
+- stage: "DeploytoProd"
+  dependsOn: "DeploytoStage"
   jobs:
   - job:
     pool:
@@ -112,6 +112,7 @@ stages:
         buildType: 'current'
         artifactName: 'drop.Release'
         targetPath: '$(Pipeline.Workspace)'
+
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
