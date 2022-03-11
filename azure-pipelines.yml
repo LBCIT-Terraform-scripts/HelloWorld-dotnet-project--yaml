@@ -54,11 +54,11 @@ stages:
     #     ArtifactName: 'drop'
     #     publishLocation: 'Container'
 
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(build.ArtifactStagingDirectory)'
-        artifact: 'drop.$(buildConfiguration)'
-        publishLocation: 'pipeline'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(build.ArtifactStagingDirectory)'
+          artifact: 'drop.$(buildConfiguration)'
+          publishLocation: 'pipeline'
 
 - stage: "DeploytoDev"
   dependsOn: "Build"
