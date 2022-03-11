@@ -61,7 +61,7 @@ stages:
         publishLocation: 'pipeline'
 
 - stage: "DeploytoDev"
-  dependsOn: "BuildJob"
+  dependsOn: "Build"
   jobs:
   - job:
     pool:
