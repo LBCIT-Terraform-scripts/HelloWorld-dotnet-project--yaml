@@ -40,13 +40,13 @@ stages:
     #     command: 'publish'
     #     publishWebProjects: true
     #     arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
-    - template: Template/buildandrestore.yaml
-      parameters:
-        buildConfiguration: 'Debug'
+    # - template: Template/buildandrestore.yaml
+    #   parameters:
+    #     buildConfiguration: 'Debug'
 
-    - template: Template/buildandrestore.yaml
-      parameters: 
-        buildConfiguration: 'Release'
+      - template: Template/buildandrestore.yaml
+        parameters: 
+          buildConfiguration: 'Release'
 
     # - task: PublishBuildArtifacts@1
     #   inputs:
@@ -72,13 +72,14 @@ stages:
         buildType: 'current'
         artifactName: 'drop.Release'
         targetPath: '$(Pipeline.Workspace)'
+        
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'dev-web-app-1-1'
-        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'  # $(System.DefaultWorkingDirectory)
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 - stage: "DeploytoStage"
   dependsOn: "DeploytoDev"
@@ -98,7 +99,7 @@ stages:
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'web-app-stage'
-        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 - stage: "DeploytoProd"
   dependsOn: "DeploytoStage"
@@ -119,7 +120,7 @@ stages:
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'web-app-prod'
-        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
     - task: AzureAppServiceManage@0
       inputs:
