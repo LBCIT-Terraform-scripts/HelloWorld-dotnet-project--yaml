@@ -78,7 +78,7 @@ stages:
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'dev-web-app-1-1'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'  # $(System.DefaultWorkingDirectory)
 
 - stage: "DeploytoStage"
   dependsOn: "DeploytoDev"
@@ -98,7 +98,7 @@ stages:
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'web-app-stage'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
 - stage: "DeploytoProd"
   dependsOn: "DeploytoStage"
@@ -119,7 +119,7 @@ stages:
         azureSubscription: 'Azure-devops-demo'
         appType: 'webApp'
         WebAppName: 'web-app-prod'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
     - task: AzureAppServiceManage@0
       inputs:
