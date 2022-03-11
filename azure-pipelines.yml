@@ -60,7 +60,31 @@ stages:
         targetPath: '$(build.ArtifactStagingDirectory)'
         artifact: 'drop'
         publishLocation: 'pipeline'
-
+- stage: "DeploytoFeature"
+  dependsOn: "Build"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature')
+  jobs:
+  - deployment:
+    pool:
+      vmimage: "ubuntu-latest"
+    environment: 'Stage'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     artifactName: 'drop.Release'
+          #     targetPath: '$(Pipeline.Workspace)'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'web-app-stage'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+              
 - stage: "DeploytoDev"
   dependsOn: "Build"
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
@@ -90,30 +114,7 @@ stages:
               WebAppName: 'dev-web-app-1-1'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
-- stage: "DeploytoFeature"
-  dependsOn: "Build"
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature')
-  jobs:
-  - deployment:
-    pool:
-      vmimage: "ubuntu-latest"
-    environment: 'Stage'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          # - task: DownloadPipelineArtifact@2
-          #   inputs:
-          #     buildType: 'current'
-          #     artifactName: 'drop.Release'
-          #     targetPath: '$(Pipeline.Workspace)'
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Azure-devops-demo'
-              appType: 'webApp'
-              WebAppName: 'web-app-stage'
-              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
 
 - stage: "DeploytoProd"
   dependsOn: "Build"
