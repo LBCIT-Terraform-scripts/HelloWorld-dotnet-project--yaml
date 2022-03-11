@@ -96,18 +96,18 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              buildType: 'current'
-              artifactName: 'drop.Release'
-              targetPath: '$(Pipeline.Workspace)'
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     artifactName: 'drop.Release'
+          #     targetPath: '$(Pipeline.Workspace)'
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'Azure-devops-demo'
               appType: 'webApp'
               WebAppName: 'web-app-stage'
-              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
 - stage: "DeploytoProd"
   dependsOn: "DeploytoStage"
@@ -120,11 +120,11 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              buildType: 'current'
-              artifactName: 'drop.Release'
-              targetPath: '$(Pipeline.Workspace)'
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     artifactName: 'drop.Release'
+          #     targetPath: '$(Pipeline.Workspace)'
 
           - task: AzureRmWebAppDeployment@4
             inputs:
@@ -132,7 +132,7 @@ stages:
               azureSubscription: 'Azure-devops-demo'
               appType: 'webApp'
               WebAppName: 'web-app-prod'
-              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
           - task: AzureAppServiceManage@0
             inputs:
