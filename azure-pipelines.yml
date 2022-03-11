@@ -8,6 +8,7 @@
 trigger:
 - dev
 - master
+- feature
 
 pr:
 - master
@@ -18,7 +19,7 @@ stages:
   jobs:
   - job: "BuildJob"
     pool:
-      vmimage: "ubuntu-latest"
+      vmimage: "windows-latest"
 
     variables:
         buildConfiguration: "Release"
@@ -61,6 +62,40 @@ stages:
         artifact: 'drop'
         publishLocation: 'pipeline'
 
+- stage: "DeploytoFeature"
+  dependsOn: "Build"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature')
+  jobs:
+  - deployment:
+    pool:
+      vmimage: "windows-latest"
+    environment: 'Feature'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     artifactName: 'drop.Release'
+          #     targetPath: '$(Pipeline.Workspace)'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'web-app-stage'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+          - task: ShaykiAbramczyk.CreatePullRequest.CreatePullRequest.CreatePullRequest@1
+            displayName: 'Create Pull Request'
+            inputs:
+              repoType: GitHub
+              githubEndpoint: 'GitHub connection 2'
+              githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
+              targetBranch: dev
+              title: 'Merge $(Build.SourceBranch) to dev'
+              reviewers: 'ayomide@lbcit.ca'
+
 - stage: "DeploytoDev"
   dependsOn: "Build"
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
@@ -90,30 +125,7 @@ stages:
               WebAppName: 'dev-web-app-1-1'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
-- stage: "DeploytoFeature"
-  dependsOn: "Build"
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature')
-  jobs:
-  - deployment:
-    pool:
-      vmimage: "ubuntu-latest"
-    environment: 'Stage'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          # - task: DownloadPipelineArtifact@2
-          #   inputs:
-          #     buildType: 'current'
-          #     artifactName: 'drop.Release'
-          #     targetPath: '$(Pipeline.Workspace)'
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Azure-devops-demo'
-              appType: 'webApp'
-              WebAppName: 'web-app-stage'
-              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
 
 - stage: "DeploytoProd"
   dependsOn: "Build"
