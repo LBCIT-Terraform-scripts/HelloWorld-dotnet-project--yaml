@@ -71,7 +71,6 @@ stages:
     - task: DownloadPipelineArtifact@2
       inputs:
         buildType: 'current'
-        artifactName: 'drop.Release'
         targetPath: '$(Pipeline.Workspace)'
         
     - task: AzureRmWebAppDeployment@4
