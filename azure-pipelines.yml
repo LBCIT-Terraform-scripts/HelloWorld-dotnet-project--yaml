@@ -102,7 +102,7 @@ stages:
   jobs:
   - deployment:
     pool:
-      vmimage: "ubuntu-latest"
+      vmimage: "windows-latest"
     environment: 'Development'
     strategy:
       runOnce:
@@ -124,6 +124,16 @@ stages:
               appType: 'webApp'
               WebAppName: 'dev-web-app-1-1'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
+          - task: ShaykiAbramczyk.CreatePullRequest.CreatePullRequest.CreatePullRequest@1
+            displayName: 'Create Pull Request'
+            inputs:
+              repoType: GitHub
+              githubEndpoint: 'GitHub connection 2'
+              githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
+              targetBranch: dev
+              title: 'Merge $(Build.SourceBranch) to Master'
+              reviewers: 'ayomide@lbcit.ca'
 
 
 
