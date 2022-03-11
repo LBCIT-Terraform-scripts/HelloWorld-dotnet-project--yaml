@@ -6,7 +6,12 @@
 # welcome to yaml pipeline
 
 trigger:
+- dev
 - master
+
+pr:
+- master
+- dev
 
 pool:
   vmimage: "ubuntu-latest"
