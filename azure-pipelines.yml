@@ -8,6 +8,7 @@
 trigger:
 - dev
 - master
+- feature
 
 pr:
 - master
@@ -84,7 +85,7 @@ stages:
               appType: 'webApp'
               WebAppName: 'web-app-stage'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
-              
+
 - stage: "DeploytoDev"
   dependsOn: "Build"
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
