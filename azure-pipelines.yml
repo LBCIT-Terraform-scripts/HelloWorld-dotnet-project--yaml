@@ -69,7 +69,7 @@ stages:
   - deployment:
     pool:
       vmimage: "ubuntu-latest"
-    environment: 'Stage'
+    environment: 'Feature'
     strategy:
       runOnce:
         deploy:
