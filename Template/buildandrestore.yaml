@@ -1,3 +1,22 @@
+######################################
+## this is for reference only
+#####################################
+# stages:
+# - stage: Build 
+#   jobs:
+#   - job: BuildJob
+#     steps:
+#     - script: "echo Building!"
+# - stage: Test
+#   jobs:
+#   - job: TestOnWindows
+#     steps:
+#     - script: echo Testing on Windows! 
+#   - job: TestOnLinux
+#     steps:
+#     - script: 
+######################################
+
 parameters:
   buildConfiguration: "Release"
   projectName: "**/*.csproj"
