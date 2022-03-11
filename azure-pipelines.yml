@@ -39,11 +39,11 @@ steps:
 #     arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
 - template: Template/buildandrestore.yaml
   parameters:
-  buildConfiguration: 'Debug'
+    buildConfiguration: 'Debug'
 
 - template: Template/buildandrestore.yaml
   parameters: 
-  buildConfiguration: 'Release'
+    buildConfiguration: 'Release'
 
 - task: PublishBuildArtifacts@1
   inputs:
