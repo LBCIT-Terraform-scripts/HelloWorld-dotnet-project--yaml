@@ -90,8 +90,9 @@ stages:
               WebAppName: 'dev-web-app-1-1'
               packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
-- stage: "DeploytoStage"
-  dependsOn: "DeploytoDev"
+- stage: "DeploytoFeature"
+  dependsOn: "Build"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/feature')
   jobs:
   - deployment:
     pool:
