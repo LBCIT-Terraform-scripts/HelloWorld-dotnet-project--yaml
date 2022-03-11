@@ -54,3 +54,76 @@ stages:
     #     ArtifactName: 'drop'
     #     publishLocation: 'Container'
 
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(build.ArtifactStagingDirectory)'
+        artifact: 'drop.$(buildConfiguration)'
+        publishLocation: 'pipeline'
+
+- stage: "Deploy to Dev"
+  dependsOn: "BuildJob"
+  jobs:
+  - job:
+    pool:
+      vmimage: "ubuntu-latest"
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'drop.Release'
+        targetPath: '$(Pipeline.Workspace)'
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure-devops-demo'
+        appType: 'webApp'
+        WebAppName: 'dev-web-app-1-1'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+
+- stage: "Deploy to Stage"
+  dependsOn: "Deploy to Dev"
+  jobs:
+  - job:
+    pool:
+      vmimage: "ubuntu-latest"
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'drop.Release'
+        targetPath: '$(Pipeline.Workspace)'
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure-devops-demo'
+        appType: 'webApp'
+        WebAppName: 'web-app-stage'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+
+- stage: "Deploy to Prod"
+  dependsOn: "Deploy to Stage"
+  jobs:
+  - job:
+    pool:
+      vmimage: "ubuntu-latest"
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'drop.Release'
+        targetPath: '$(Pipeline.Workspace)'
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure-devops-demo'
+        appType: 'webApp'
+        WebAppName: 'web-app-prod'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+
+    - task: AzureAppServiceManage@0
+      inputs:
+        azureSubscription: 'Azure-devops-demo'
+        Action: 'Swap Slots'
+        WebAppName: 'web-app-prod'
+        ResourceGroupName: 'devops-demo-rg'
+        SourceSlot: 'web-app-stage'
