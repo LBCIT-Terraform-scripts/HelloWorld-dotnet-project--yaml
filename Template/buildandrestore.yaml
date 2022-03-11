@@ -1,0 +1,44 @@
+######################################
+## this is for reference only
+#####################################
+# stages:
+# - stage: Build 
+#   jobs:
+#   - job: BuildJob
+#     steps:
+#     - script: "echo Building!"
+# - stage: Test
+#   jobs:
+#   - job: TestOnWindows
+#     steps:
+#     - script: echo Testing on Windows! 
+#   - job: TestOnLinux
+#     steps:
+#     - script: 
+######################################
+
+parameters:
+  buildConfiguration: "Release"
+  projectName: "**/*.csproj"
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Restore in ${{parameters.buildConfiguration}}
+  inputs:
+    command: 'restore'
+    projects: ${{parameters.projectName}}
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: Build in ${{parameters.buildConfiguration}}
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration ${{parameters.buildConfiguration}}'
+
+- task: DotNetCoreCLI@2
+  displayName: Publish in ${{parameters.buildConfiguration}}
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration ${{parameters.buildConfiguration}} --output $(build.ArtifactStagingDirectory)/${{parameters.buildConfiguration}}'

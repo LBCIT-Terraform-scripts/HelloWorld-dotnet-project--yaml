@@ -6,33 +6,138 @@
 # welcome to yaml pipeline
 
 trigger:
+- dev
 - master
 
-pool:
-  vmimage: "ubuntu-latest"
+pr:
+- master
+- dev
 
-variables:
-    buildConfiguration: "Release"
+stages:
+- stage: "Build"
+  jobs:
+  - job: "BuildJob"
+    pool:
+      vmimage: "ubuntu-latest"
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-    feedsToUse: 'select'
+    variables:
+        buildConfiguration: "Release"
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+        feedsToUse: 'select'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
+
+    # - template: Template/buildandrestore.yaml
+    #   parameters:
+    #     buildConfiguration: 'Debug'
+
+    #   - template: Template/buildandrestore.yaml
+    #     parameters: 
+    #       buildConfiguration: 'Release'
+
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #     ArtifactName: 'drop'
+    #     publishLocation: 'Container'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(build.ArtifactStagingDirectory)'
+        artifact: 'drop'
+        publishLocation: 'pipeline'
+
+- stage: "DeploytoDev"
+  dependsOn: "Build"
+  jobs:
+  - deployment:
+    pool:
+      vmimage: "ubuntu-latest"
+    environment: 'Development'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     targetPath: '$(Pipeline.Workspace)'
+              
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'dev-web-app-1-1'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
+- stage: "DeploytoStage"
+  dependsOn: "DeploytoDev"
+  jobs:
+  - deployment:
+    pool:
+      vmimage: "ubuntu-latest"
+    environment: 'Stage'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     artifactName: 'drop.Release'
+          #     targetPath: '$(Pipeline.Workspace)'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'web-app-stage'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
+- stage: "DeploytoProd"
+  dependsOn: "DeploytoStage"
+  jobs:
+  - deployment:
+    pool:
+      vmimage: "ubuntu-latest"
+    environment: 'Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # - task: DownloadPipelineArtifact@2
+          #   inputs:
+          #     buildType: 'current'
+          #     artifactName: 'drop.Release'
+          #     targetPath: '$(Pipeline.Workspace)'
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'web-app-prod'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription: 'Azure-devops-demo'
+              Action: 'Swap Slots'
+              WebAppName: 'web-app-prod'
+              ResourceGroupName: 'devops-demo-rg'
+              SourceSlot: 'web-app-stage'
