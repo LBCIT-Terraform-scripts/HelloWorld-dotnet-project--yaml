@@ -64,68 +64,80 @@ stages:
 - stage: "DeploytoDev"
   dependsOn: "Build"
   jobs:
-  - job:
+  - deployment:
     pool:
       vmimage: "ubuntu-latest"
-    steps:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        targetPath: '$(Pipeline.Workspace)'
-        
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure-devops-demo'
-        appType: 'webApp'
-        WebAppName: 'dev-web-app-1-1'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    environment: 'Development'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              targetPath: '$(Pipeline.Workspace)'
+              
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'dev-web-app-1-1'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 - stage: "DeploytoStage"
   dependsOn: "DeploytoDev"
   jobs:
-  - job:
+  - deployment:
     pool:
       vmimage: "ubuntu-latest"
-    steps:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        artifactName: 'drop.Release'
-        targetPath: '$(Pipeline.Workspace)'
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure-devops-demo'
-        appType: 'webApp'
-        WebAppName: 'web-app-stage'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    environment: 'Stage'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'drop.Release'
+              targetPath: '$(Pipeline.Workspace)'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'web-app-stage'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 - stage: "DeploytoProd"
   dependsOn: "DeploytoStage"
   jobs:
-  - job:
+  - deployment:
     pool:
       vmimage: "ubuntu-latest"
-    steps:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        artifactName: 'drop.Release'
-        targetPath: '$(Pipeline.Workspace)'
+    environment: 'Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'drop.Release'
+              targetPath: '$(Pipeline.Workspace)'
 
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure-devops-demo'
-        appType: 'webApp'
-        WebAppName: 'web-app-prod'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure-devops-demo'
+              appType: 'webApp'
+              WebAppName: 'web-app-prod'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-    - task: AzureAppServiceManage@0
-      inputs:
-        azureSubscription: 'Azure-devops-demo'
-        Action: 'Swap Slots'
-        WebAppName: 'web-app-prod'
-        ResourceGroupName: 'devops-demo-rg'
-        SourceSlot: 'web-app-stage'
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription: 'Azure-devops-demo'
+              Action: 'Swap Slots'
+              WebAppName: 'web-app-prod'
+              ResourceGroupName: 'devops-demo-rg'
+              SourceSlot: 'web-app-stage'
