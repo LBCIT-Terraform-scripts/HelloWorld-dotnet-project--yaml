@@ -131,7 +131,7 @@ stages:
               repoType: GitHub
               githubEndpoint: 'GitHub connection 2'
               githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
-              targetBranch: dev
+              targetBranch: master
               title: 'Merge $(Build.SourceBranch) to Master'
               reviewers: 'ayomide@lbcit.ca'
 
