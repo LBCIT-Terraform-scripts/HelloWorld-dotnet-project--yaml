@@ -54,8 +54,8 @@ stages:
         arguments: '--no-build --configuration $(buildConfiguration) /p:threshold=80 /p:thresholdType=line
       /p:thresholdStat=total /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./Test
       Results/Coverage/'
-      publishTestResults: true
-      projects: '**/*Tests.csproj'
+        publishTestResults: true
+        projects: '**/*Tests.csproj'
 
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish code coverage report'
