@@ -10,6 +10,10 @@ trigger:
 - dev
 - master
 - feature/*
+paths:
+    exclude:
+    - Readme.md
+    - docs/
 
 pr:
 - master
