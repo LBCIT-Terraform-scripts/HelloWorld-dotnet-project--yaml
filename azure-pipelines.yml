@@ -7,9 +7,11 @@
 name: $(SourceBranchName)_$(date:yyyyMMdd)$(rev:.r) 
 
 trigger:
-- dev
-- master
-- feature/*
+  branches: 
+    include: 
+      - dev
+      - master
+      - feature/*
   paths:
     exclude:
     - Readme.md
