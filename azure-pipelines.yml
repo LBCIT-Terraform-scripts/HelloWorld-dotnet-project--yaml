@@ -17,6 +17,7 @@ trigger:
     - Readme.md
     - docs/
 
+
 pr:
 - master
 - dev
