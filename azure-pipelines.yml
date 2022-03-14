@@ -4,12 +4,19 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 # welcome to yaml pipeline
+name: $(SourceBranchName)_$(date:yyyyMMdd)$(rev:.r) 
 
 trigger:
-- dev
-- master
-- feature 
-- feature-1
+  branches: 
+    include: 
+    - dev
+    - master
+    - feature*
+  paths:
+    exclude:
+    - Readme.md
+    - docs/
+
 
 pr:
 - master
@@ -70,7 +77,6 @@ stages:
     #     publishTestResults: true
     #     projects: '**/*Tests.csproj'
        
-       
     - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
       displayName: 'Run Code Analysis'
     
@@ -91,8 +97,8 @@ stages:
 
 
     - task: DotNetCoreCLI@2
+      displayName: 'Publish Artifacts'
       inputs:
-        displayName: 'Publish Artifacts'
         command: 'publish'
         publishWebProjects: true
         arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
@@ -149,7 +155,7 @@ stages:
               githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
               targetBranch: dev
               title: 'Merge $(Build.SourceBranch) to dev'
-              reviewers: 'ayomide@lbcit.ca'
+              reviewers: 'ayomide@lbcit.ca, Milua25'
 
 - stage: "DeploytoDev"
   dependsOn: "Build"
@@ -188,9 +194,7 @@ stages:
               githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
               targetBranch: master
               title: 'Merge $(Build.SourceBranch) to Master'
-              reviewers: 'ayomide@lbcit.ca'
-
-
+              reviewers: 'ayomide@lbcit.ca, Milua25'
 
 - stage: "DeploytoProd"
   dependsOn: "Build"
@@ -202,7 +206,7 @@ stages:
     environment: 'Production'
     strategy:
       runOnce:
-        deploy:
+        deploy: 
           steps:
           # - task: DownloadPipelineArtifact@2
           #   inputs:
@@ -225,3 +229,5 @@ stages:
               WebAppName: 'web-app-prod'
               ResourceGroupName: 'devops-demo-rg'
               SourceSlot: 'web-app-stage'
+
+              # thanks
