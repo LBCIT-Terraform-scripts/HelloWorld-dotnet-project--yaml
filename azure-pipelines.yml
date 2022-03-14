@@ -77,7 +77,6 @@ stages:
     #     publishTestResults: true
     #     projects: '**/*Tests.csproj'
        
-       
     - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
       displayName: 'Run Code Analysis'
     
@@ -196,8 +195,6 @@ stages:
               targetBranch: master
               title: 'Merge $(Build.SourceBranch) to Master'
               reviewers: 'ayomide@lbcit.ca'
-
-
 
 - stage: "DeploytoProd"
   dependsOn: "Build"
