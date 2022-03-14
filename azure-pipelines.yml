@@ -156,7 +156,7 @@ stages:
               githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
               targetBranch: dev
               title: 'Merge $(Build.SourceBranch) to dev'
-              reviewers: 'ayomide@lbcit.ca'
+              reviewers: 'ayomide@lbcit.ca, Ayo-Milua'
 
 - stage: "DeploytoDev"
   dependsOn: "Build"
