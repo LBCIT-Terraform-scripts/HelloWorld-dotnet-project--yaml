@@ -21,8 +21,8 @@ stages:
     pool:
       vmimage: "windows-latest"
 
-    variables:
-        buildConfiguration: "Release"
+#    variables:
+  #      buildConfiguration: "Release"
 
     steps:
     - task: DotNetCoreCLI@2
@@ -58,13 +58,14 @@ stages:
         command: test
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(BuildConfiguration)'
+
     
 
     - task: DotNetCoreCLI@2
       displayName: 'Run unit tests - $(buildConfiguration)'
       inputs:
         command: 'test'
-        arguments: '--configuration $(BuildConfiguration) --collect "Code Coverage"  /p:threshold=8 /p:thresholdType=line /p:thresholdStat=total /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/Coverage/'
+        arguments: '--no-build --configuration $(BuildConfiguration) --collect "Code Coverage"  /p:threshold=8 /p:thresholdType=line /p:thresholdStat=total /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/Coverage/'
         publishTestResults: true
         projects: '**/*Tests.csproj'
        
@@ -90,6 +91,7 @@ stages:
 
     - task: DotNetCoreCLI@2
       inputs:
+        displayName: 'Publish Artifacts'
         command: 'publish'
         publishWebProjects: true
         arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
