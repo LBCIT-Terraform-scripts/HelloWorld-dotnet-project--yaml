@@ -206,7 +206,7 @@ stages:
     environment: 'Production'
     strategy:
       runOnce:
-        deploy:
+        deploy: 
           steps:
           # - task: DownloadPipelineArtifact@2
           #   inputs:
