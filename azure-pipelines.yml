@@ -194,7 +194,7 @@ stages:
               githubRepository: 'LBCIT-Terraform-scripts/HelloWorld-dotnet-project--yaml'
               targetBranch: master
               title: 'Merge $(Build.SourceBranch) to Master'
-              reviewers: 'ayomide@lbcit.ca'
+              reviewers: 'ayomide@lbcit.ca, Ayo-Milua'
 
 - stage: "DeploytoProd"
   dependsOn: "Build"
