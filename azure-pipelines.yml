@@ -99,7 +99,7 @@ stages:
 
     - task: DotNetCoreCLI@2
       inputs:
-        displayName: 'Publish Artifacts'
+      displayName: 'Publish Artifacts'
         command: 'publish'
         publishWebProjects: true
         arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
