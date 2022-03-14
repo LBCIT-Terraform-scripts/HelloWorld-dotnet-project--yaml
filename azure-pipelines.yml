@@ -8,8 +8,7 @@
 trigger:
 - dev
 - master
-- feature 
-- feature-1
+- feature/*
 
 pr:
 - master
