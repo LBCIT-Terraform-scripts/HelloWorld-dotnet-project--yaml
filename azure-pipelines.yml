@@ -37,7 +37,7 @@ stages:
       inputs:
         SonarCloud: 'SoncarCloud '
         organization: 'ayomide-dev-prod-qa'
-        projectKey: 'HelloWorld-dotnet-project Yaml'
+        projectKey: 'HelloWorld-dotnet-project--yaml'
         extraProperties: |
         # Additional properties that will be passed to the scanner, 
         # Put one key=value per line, example:
