@@ -229,3 +229,5 @@ stages:
               WebAppName: 'web-app-prod'
               ResourceGroupName: 'devops-demo-rg'
               SourceSlot: 'web-app-stage'
+
+              # thanks
