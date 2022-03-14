@@ -49,7 +49,7 @@ stages:
       inputs:
         command: 'build'
         projects: '**/*.csproj'
-        arguments: '--configuration $(buildConfiguration)'
+        arguments: '--configuration $(BuildConfiguration)'
     
     
     - task: DotNetCoreCLI@2
@@ -57,7 +57,7 @@ stages:
       inputs:
         command: test
         projects: '**/*[Tt]ests/*.csproj'
-        arguments: '--configuration $(BuildConfiguration). --collect "Code Coverage"  /p:threshold=8 /p:thresholdType=line /p:thresholdStat=total /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/Coverage/'
+        arguments: '--configuration $(BuildConfiguration) --collect "Code Coverage"  /p:threshold=8 /p:thresholdType=line /p:thresholdStat=total /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/Coverage/'
 
     
 
